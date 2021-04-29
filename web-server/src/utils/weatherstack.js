@@ -1,4 +1,3 @@
-const request = require("request");
 const fetch = require("node-fetch");
 
 const weatherstack =  async (longitude, latitude) => {
@@ -7,7 +6,7 @@ const weatherstack =  async (longitude, latitude) => {
         var response = await fetch(url);
         response = await response.json();
         if(response.error){
-            return {error: response.error, data: undefined};
+            return {error: response.error, weatherData: undefined};
         } else{
             const data = response.current;
             return {
@@ -18,7 +17,7 @@ const weatherstack =  async (longitude, latitude) => {
             }
         }
     } catch(e){
-        return {error: 'Unable to connect to network.', data: undefined};
+        return {error: 'Unable to connect to network.', weatherData: undefined};
     }
 }; 
 
