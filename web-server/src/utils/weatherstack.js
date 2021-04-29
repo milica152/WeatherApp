@@ -1,23 +1,25 @@
 const request = require("request");
+const fetch = require("node-fetch");
 
-const weatherstack = (longitude, latitude, callback) => {
-    const url = 'http://api.weatherstack.com/current?access_key=8d6cdf5b4440b48c7bc11f487f3575cb&query=' + latitude + ',' + longitude;
-    //console.log(url);
-    request({url: url, json:true}, (error, response) => {
-        //console.log();
-        //console.log();
-        //console.log(response.body);
-        if(error){
-            callback('Unable to connect to network.', undefined)
-        } else if(response.body.error){
-            callback(response.body.error, undefined);
+const weatherstack =  async (longitude, latitude) => {
+    const url = `http://api.weatherstack.com/current?access_key=8d6cdf5b4440b48c7bc11f487f3575cb&query=${latitude},${longitude}`;
+    try{
+        var response = await fetch(url);
+        response = await response.json();
+        if(response.error){
+            return {error: response.error, data: undefined};
         } else{
-            const data = response.body.current;
-            callback(undefined, {
-                forecast: "Weather is " + data.weather_descriptions[0] + ". It is currently " + data.temperature + " degrees out.  It feels like " + data.feelslike + " degrees out."
-            })
+            const data = response.current;
+            return {
+                error: undefined, 
+                weatherData: {
+                    forecast: `Weather is ${data.weather_descriptions[0]}. It is currently ${data.temperature} degrees out.  It feels like ${data.feelslike} degrees out.`
+                }
+            }
         }
-    })
+    } catch(e){
+        return {error: 'Unable to connect to network.', data: undefined};
+    }
 }; 
 
 module.exports = weatherstack;

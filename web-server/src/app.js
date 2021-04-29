@@ -42,28 +42,18 @@ app.get('/about', (req, res) => {
     });
 });
 
-app.get('/weather', (req, res) => {
-    if(!req.query.address){
-        return res.send({
-            error: "You must provide an address"
-        });
-    }
+app.get('/weather', async (req, res) => {
+    if(!req.query.address) return res.send({ error: "You must provide an address" });
     
-    geocode(req.query.address, (error, {longitude, latitude, location} = {}) => {
-        if(error){
-            return res.send({error});
-        }
-        
-        weatherstack(longitude, latitude, (error, weatherData) => {
-            if(error){
-                return res.send({error});
-            }
-            return res.send({
-                forecast: weatherData.forecast,
-                location: location ,
-                address: req.query.address
-            });
-        })
+    const {error, data={}} = await geocode(req.query.address);
+    if(error) return res.send({ error });
+    
+    const {weatherError, weatherData={}} = await weatherstack(data.longitude, data.latitude);
+    if(weatherError) return res.send({error: weatherError});
+    return res.send({
+        forecast: weatherData.forecast,
+        location: data.location ,
+        address: req.query.address
     });
 });
 
