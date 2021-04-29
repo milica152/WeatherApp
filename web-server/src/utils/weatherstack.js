@@ -6,18 +6,18 @@ const weatherstack =  async (longitude, latitude) => {
         var response = await fetch(url);
         response = await response.json();
         if(response.error){
-            return {error: response.error, weatherData: undefined};
+            return {weatherError: response.error, weatherData: undefined};
         } else{
             const data = response.current;
             return {
-                error: undefined, 
+                weatherError: undefined, 
                 weatherData: {
                     forecast: `Weather is ${data.weather_descriptions[0]}. It is currently ${data.temperature} degrees out.  It feels like ${data.feelslike} degrees out.`
                 }
             }
         }
     } catch(e){
-        return {error: 'Unable to connect to network.', weatherData: undefined};
+        return {weatherError: 'Unable to connect to network.', weatherData: undefined};
     }
 }; 
 
